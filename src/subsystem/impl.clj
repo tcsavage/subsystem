@@ -15,3 +15,9 @@
   (stop [this]
     (throw (ex-info "A component box should never reach the point of being stopped."
                     {:component component}))))
+
+(defrecord Subsystem
+    [__start __stop]
+  component/Lifecycle
+  (start [this] (__start this))
+  (stop [this] (__stop this)))
