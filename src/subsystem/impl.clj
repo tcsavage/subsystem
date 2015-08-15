@@ -4,17 +4,15 @@
   (:require [com.stuartsierra.component :as component]))
 
 ;;; A ComponentBox is a simple wrapper for components which are already running
-;;; at start-time (like dependencies). When a ComponentBox starts it just
-;;; returns the already-running component inside it. A ComponentBox should never
-;;; be stopped.
+;;; at start-time (like dependencies). When a ComponentBox starts or stops it
+;;; just returns the already-running or stopped component inside it.
 (defrecord ComponentBox
     [component]
   component/Lifecycle
   (start [this]
     component)
   (stop [this]
-    (throw (ex-info "A component box should never reach the point of being stopped."
-                    {:component component}))))
+    component))
 
 (defrecord Subsystem
     [__start __stop]

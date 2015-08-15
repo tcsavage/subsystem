@@ -23,7 +23,7 @@
   [system & {:keys [pre-start post-start pre-stop post-stop]
              :or {pre-start identity post-start identity
                   pre-stop identity post-stop identity}}]
-  (let [deps (mapcat (comp vals :com.stuartsierra.component/dependencies meta) (vals system))
+  (let [deps (set (mapcat (comp vals :com.stuartsierra.component/dependencies meta) (vals system)))
         start (fn [this] (let [started (as-> this $
                                              (select-keys $ deps)
                                              (fmap impl/->ComponentBox $)
@@ -32,7 +32,15 @@
                                              (component/start $)
                                              (post-start $))]
                            (assoc this :system started)))
-        stop (fn [this] (post-stop (component/stop (pre-stop (apply dissoc system deps)))))
+        stop (fn [this] (let [system (:system this)
+                              stopped (as-> system $
+                                        (select-keys $ deps)
+                                        (fmap impl/->ComponentBox $)
+                                        (merge system $)
+                                        (pre-stop $)
+                                        (component/stop $)
+                                        (post-stop $))]
+                          (assoc this :system stopped)))
         component (impl/map->Subsystem {:__start start :__stop stop})]
     (if (seq deps)
       (component/using component (vec deps))
