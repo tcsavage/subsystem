@@ -19,3 +19,12 @@
   component/Lifecycle
   (start [this] (__start this))
   (stop [this] (__stop this)))
+
+(def component-dependencies
+  "Returns keys depended on my component."
+  (comp vals :com.stuartsierra.component/dependencies meta))
+
+(defn external-dependencies
+  "Returns set of all dependency keys external to the system map."
+  [system]
+  (set (mapcat component-dependencies (vals system))))

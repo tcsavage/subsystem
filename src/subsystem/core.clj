@@ -4,15 +4,6 @@
             [com.stuartsierra.component :as component]
             [clojure.algo.generic.functor :refer [fmap]]))
 
-(def component-dependencies
-  "Returns keys depended on my component."
-  (comp vals :com.stuartsierra.component/dependencies meta))
-
-(defn external-dependencies
-  "Returns set of all dependency keys external to the system map."
-  [system]
-  (set (mapcat component-dependencies (vals system))))
-
 (defn subsystem
   "Turn a system map into a component. The resulting component inherits the
   dependencies of all constituent components. Components inside a subsystem can
@@ -32,7 +23,7 @@
   [system & {:keys [pre-start post-start pre-stop post-stop]
              :or {pre-start identity post-start identity
                   pre-stop identity post-stop identity}}]
-  (let [deps (external-dependencies system)
+  (let [deps (impl/external-dependencies system)
         start (fn [this] (let [started (as-> this $
                                          (select-keys $ deps)
                                          (fmap impl/->ComponentBox $)

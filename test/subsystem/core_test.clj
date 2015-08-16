@@ -1,6 +1,7 @@
 (ns subsystem.core-test
   (:require [clojure.test :refer :all]
             [subsystem.core :refer :all]
+            [subsystem.impl :as impl]
             [com.stuartsierra.component :as component]))
 
 (def component-a
@@ -47,14 +48,14 @@
   (testing "When system components have external dependencies they should be
            inherited by the subsystem component"
     (let [subsystem-component (subsystem inner-system)
-          inherited-deps (component-dependencies subsystem-component)
-          external-deps (external-dependencies inner-system)]
+          inherited-deps (impl/component-dependencies subsystem-component)
+          external-deps (impl/external-dependencies inner-system)]
       (is (= (set inherited-deps) external-deps))))
 
   (testing "When the system components have no external dependencies the
            subsystem component has no dependencies"
     (let [subsystem-component (subsystem inner-system-no-deps)
-          inherited-deps (component-dependencies subsystem-component)]
+          inherited-deps (impl/component-dependencies subsystem-component)]
       (is (nil? inherited-deps)))))
 
 (deftest test-subsystem-start
