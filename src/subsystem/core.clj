@@ -1,6 +1,6 @@
 (ns subsystem.core
   {:author "Tom Savage"}
-  (:require [subsystem.impl :as impl]
+  (:require [subsystem.internal :as internal]
             [com.stuartsierra.component :as component]
             [clojure.algo.generic.functor :refer [fmap]]))
 
@@ -23,10 +23,10 @@
   [system & {:keys [pre-start post-start pre-stop post-stop]
              :or {pre-start identity post-start identity
                   pre-stop identity post-stop identity}}]
-  (let [deps (impl/external-dependencies system)
+  (let [deps (internal/external-dependencies system)
         start (fn [this] (let [started (as-> this $
                                          (select-keys $ deps)
-                                         (fmap impl/->ComponentBox $)
+                                         (fmap internal/->ComponentBox $)
                                          (merge system $)
                                          (pre-start $)
                                          (component/start-system $)
@@ -35,13 +35,13 @@
         stop (fn [this] (let [system (:system this)
                               stopped (as-> system $
                                         (select-keys $ deps)
-                                        (fmap impl/->ComponentBox $)
+                                        (fmap internal/->ComponentBox $)
                                         (merge system $)
                                         (pre-stop $)
                                         (component/stop-system $)
                                         (post-stop $))]
                           (assoc this :system stopped)))
-        component (impl/map->Subsystem {:__start start :__stop stop})]
+        component (internal/map->Subsystem {:__start start :__stop stop})]
     (if (seq deps)
       (component/using component (vec deps))
       component)))

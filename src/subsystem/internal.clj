@@ -1,4 +1,4 @@
-(ns subsystem.impl
+(ns subsystem.internal
   "Subsystem internals."
   {:author "Tom Savage"}
   (:require [com.stuartsierra.component :as component]))
@@ -21,7 +21,7 @@
   (stop [this] (__stop this)))
 
 (def component-dependencies
-  "Returns keys depended on my component."
+  "Returns keys depended on by component."
   (comp vals :com.stuartsierra.component/dependencies meta))
 
 (defn external-dependencies
