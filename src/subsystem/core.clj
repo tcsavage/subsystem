@@ -4,6 +4,15 @@
             [com.stuartsierra.component :as component]
             [clojure.algo.generic.functor :refer [fmap]]))
 
+(def component-dependencies
+  "Returns keys depended on my component."
+  (comp vals :com.stuartsierra.component/dependencies meta))
+
+(defn external-dependencies
+  "Returns set of all dependency keys external to the system map."
+  [system]
+  (set (mapcat component-dependencies (vals system))))
+
 (defn subsystem
   "Turn a system map into a component. The resulting component inherits the
   dependencies of all constituent components. Components inside a subsystem can
@@ -23,14 +32,14 @@
   [system & {:keys [pre-start post-start pre-stop post-stop]
              :or {pre-start identity post-start identity
                   pre-stop identity post-stop identity}}]
-  (let [deps (set (mapcat (comp vals :com.stuartsierra.component/dependencies meta) (vals system)))
+  (let [deps (external-dependencies system)
         start (fn [this] (let [started (as-> this $
-                                             (select-keys $ deps)
-                                             (fmap impl/->ComponentBox $)
-                                             (merge system $)
-                                             (pre-start $)
-                                             (component/start $)
-                                             (post-start $))]
+                                         (select-keys $ deps)
+                                         (fmap impl/->ComponentBox $)
+                                         (merge system $)
+                                         (pre-start $)
+                                         (component/start-system $)
+                                         (post-start $))]
                            (assoc this :system started)))
         stop (fn [this] (let [system (:system this)
                               stopped (as-> system $
@@ -38,7 +47,7 @@
                                         (fmap impl/->ComponentBox $)
                                         (merge system $)
                                         (pre-stop $)
-                                        (component/stop $)
+                                        (component/stop-system $)
                                         (post-stop $))]
                           (assoc this :system stopped)))
         component (impl/map->Subsystem {:__start start :__stop stop})]
