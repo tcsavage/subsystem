@@ -64,7 +64,7 @@
     (let [system (component/system-map
                   :component (tracking-component :stopped))
           started (component/start (subsystem system))]
-      (is (running? (:component (:system started)))))))
+      (is (running? (:component (:__system started)))))))
 
 (deftest test-subsystem-stop
   (testing "When subsystem component stops, inner system should stop and
@@ -73,7 +73,7 @@
                   :component (tracking-component :running))
           started (component/start (subsystem system))
           stopped (component/stop started)]
-      (is (not (running? (running? (:component (:system stopped)))))))))
+      (is (not (running? (running? (:component (:__system stopped)))))))))
 
 (defn push-meta
   [value]
@@ -85,7 +85,7 @@
 (defn test-meta
   [subsystem]
   (-> subsystem
-      :system
+      :__system
       meta
       :test-meta))
 
@@ -109,7 +109,7 @@
           started (component/start (subsystem system
                                               :pre-start pre-start
                                               :post-start post-start))]
-      (is (running? (:component (:system started))))
+      (is (running? (:component (:__system started))))
       (is (= '(:post-start :pre-start) (test-meta started))))))
 
 (deftest test-subsystem-stop-actions
@@ -123,5 +123,5 @@
                                               :pre-stop pre-stop
                                               :post-stop post-stop))
           stopped (component/stop started)]
-      (is (not (running? (:component (:system stopped)))))
+      (is (not (running? (:component (:__system stopped)))))
       (is (= '(:post-stop :pre-stop) (test-meta stopped))))))

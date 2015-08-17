@@ -15,7 +15,7 @@
     component))
 
 (defrecord Subsystem
-    [__start __stop]
+    [__start __stop __system]
   component/Lifecycle
   (start [this] (__start this))
   (stop [this] (__stop this)))

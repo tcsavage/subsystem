@@ -31,8 +31,8 @@
                                          (pre-start $)
                                          (component/start-system $)
                                          (post-start $))]
-                           (assoc this :system started)))
-        stop (fn [this] (let [system (:system this)
+                           (assoc this :__system started)))
+        stop (fn [this] (let [system (:__system this)
                               stopped (as-> system $
                                         (select-keys $ deps)
                                         (fmap internal/->ComponentBox $)
@@ -40,7 +40,7 @@
                                         (pre-stop $)
                                         (component/stop-system $)
                                         (post-stop $))]
-                          (assoc this :system stopped)))
+                          (assoc this :__system stopped)))
         component (internal/map->Subsystem {:__start start :__stop stop})]
     (if (seq deps)
       (component/using component (vec deps))
