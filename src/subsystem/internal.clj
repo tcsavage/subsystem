@@ -1,7 +1,8 @@
 (ns subsystem.internal
   "Subsystem internals."
   {:author "Tom Savage"}
-  (:require [com.stuartsierra.component :as component]))
+  (:require [clojure.set :as set]
+            [com.stuartsierra.component :as component]))
 
 ;;; A ComponentBox is a simple wrapper for components which are already running
 ;;; at start-time (like dependencies). When a ComponentBox starts or stops it
@@ -22,9 +23,11 @@
 
 (def component-dependencies
   "Returns keys depended on by component."
-  (comp vals :com.stuartsierra.component/dependencies meta))
+  (comp set vals :com.stuartsierra.component/dependencies meta))
 
 (defn external-dependencies
   "Returns set of all dependency keys external to the system map."
   [system]
-  (set (mapcat component-dependencies (vals system))))
+  (let [system-deps (set (mapcat component-dependencies (vals system)))
+        system-keys (set (keys system))]
+    (set/difference system-deps system-keys)))

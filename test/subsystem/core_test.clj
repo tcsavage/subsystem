@@ -12,7 +12,7 @@
 (def component-b
   (component/using
    {:name "component-b"}
-   [:dependency-a :dependency-b]))
+   [:dependency-a :dependency-b :component-a]))
 
 (def component-c
   {:name "component-c"})
@@ -56,7 +56,7 @@
            subsystem component has no dependencies"
     (let [subsystem-component (subsystem inner-system-no-deps)
           inherited-deps (internal/component-dependencies subsystem-component)]
-      (is (nil? inherited-deps)))))
+      (is (empty? inherited-deps)))))
 
 (deftest test-subsystem-start
   (testing "When subsystem component starts, inner system should start and
