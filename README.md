@@ -2,6 +2,9 @@
 
 [Codox](http://tcsavage.github.io/docs/subsystem/0.1.0-SNAPSHOT/)
 
+[![Travis](https://img.shields.io/travis/tcsavage/subsystem.svg)]()
+[![Clojars](https://img.shields.io/clojars/v/subsystem.svg)]()
+
 Provides a facility to package a system map as a component in a larger system.
 
 ## Usage

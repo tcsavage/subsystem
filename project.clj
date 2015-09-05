@@ -1,4 +1,4 @@
-(defproject subsystem "0.1.0-SNAPSHOT"
+(defproject subsystem "0.1.0"
   :description "Component subsystems. Turn a system map into a component in a larger system."
   :url "http://github.com/tcsavage/subsystem"
   :license {:name "Eclipse Public License"
